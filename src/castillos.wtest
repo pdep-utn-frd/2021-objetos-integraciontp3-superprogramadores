@@ -1,0 +1,6 @@
+
+describe "castillos en guerra" {
+	test "2 + 2 = 4" {
+		assert.equals(4, 2 + 2)
+	}
+}
