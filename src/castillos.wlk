@@ -22,6 +22,7 @@ class Castillo {
 	var patio = new Patio(castillo = self)
 	var guardias = []
 	var burocratas = []
+	var muralla = 3
 	var estabilidad = 500
 	var resistencia = 500
 	var ambientes = [cocina, patio]
@@ -36,6 +37,7 @@ class Castillo {
 	method cocina()		 = cocina
 	method patio() 		 = patio
 	method guardias()    = guardias
+	method muralla()     = muralla
 	method burocratas()  = burocratas	
 	method derrotado()   = estabilidad < 100
 	method lider()       = lider
@@ -43,9 +45,10 @@ class Castillo {
 	method resistencia(_resistencia) { resistencia = _resistencia }
 	
 	method prepararDefensas() {
-		guardias.forEach({ guardia => estabilidad += guardia.capacidad() * 0.5 })
+		guardias.forEach({ guardia => estabilidad += guardia.capacidad() * 0.1 })
 		burocratas.filter({ burocrata => burocrata.puedePlanificar() })
-					.forEach({ burocrata => resistencia += burocrata.aniosExperiencia() * 20})
+					.forEach({ burocrata => resistencia += burocrata.aniosExperiencia() * 10})
+		resistencia += muralla * 20
 	}
 	
 	method cambiarAReina() {
@@ -54,6 +57,10 @@ class Castillo {
 	
 	method cambiarARey(){
 		lider = new Rey(castillo = self)
+	}
+	
+	method agrandarMuralla(metros) {
+		muralla += metros
 	}
 	
 	method festejar() {
@@ -91,7 +98,7 @@ class Castillo {
 	// es posible fiesta si la resistencia es mayor a 125 o 25% de 500 y 
 	// con menos o la mitad de los burocratas asustados.
 	method esPosibleFiesta() {
-		return (estabilidad > 125) and (burocratas.filter({ b => b.asustado() }).size() <= burocratas.size() * 0.5)	
+		return (estabilidad > 125) and (burocratas.sum({ b => b.panico() }) <= burocratas.size() * 5)	
 	}
 	
 	method atacar(objetivo) {
@@ -122,7 +129,6 @@ class Castillo {
 			estabilidad = estabilidad - (self.diferenciaEjercitos(atacante) * 1500 / resistencia)
 			resistencia = resistencia - (self.diferenciaEjercitos(atacante) * 5)
 		}
-		
 		
 		guardias.forEach({ guardia => guardia.defenderCastillo() })
 		// los guardias que poseen energia 0 o menor despues de la pelea mueren o se retiran deshabilitados.
@@ -280,12 +286,13 @@ class Burocrata {
 	var nombre
 	var fechaDeNacimiento
 	var aniosExperiencia
-	var estaAsustado = false
+	var panico = 0
 	
 	method nombre() = nombre
 	method aniosExperiencia() = aniosExperiencia
-	method puedePlanificar() = not estaAsustado
-	method asustado() = estaAsustado
-	method relajarse() { estaAsustado = false }
-	method asustarse() { estaAsustado = true }
+	method puedePlanificar() = (panico == 5 or panico < 5)
+	method asustado() = panico > 5
+	method panico() = panico
+	method relajarse() { panico =  0 }
+	method asustarse() { panico += 2 }
 }
