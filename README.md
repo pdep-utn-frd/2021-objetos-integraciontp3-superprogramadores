@@ -2,7 +2,9 @@
 ## Castillos en Guerra
 
 
-[Enlace a la consigna](https://docs.google.com/document/d/1GBfGRk3Sgiw-obxy3uITdnZKUj1qgNLTzCoxF0f7Z2Q/)# Respuesta pregunta 3.
+[Enlace a la consigna](https://docs.google.com/document/d/1GBfGRk3Sgiw-obxy3uITdnZKUj1qgNLTzCoxF0f7Z2Q/)
+
+# Respuesta pregunta 3.
 
 La ventaja de utilizar clases radica en que al crear los objetos de esta manera, no hace 
 falta programar o escribir los metodos para cada objeto, ya que los comparten por ser 
