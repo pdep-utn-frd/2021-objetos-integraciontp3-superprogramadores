@@ -57,6 +57,12 @@ describe "Condiciones Iniciales" {
 		assert.that(castillo1.muralla() == 5)
 	}
 	
+	
+	test "Funciona efectoAmbientes" {	
+		castillo1.construirHabitaciones(3)
+		assert.equals(castillo1.efectoAmbientes(), 75)		
+	}
+	
 	test "Funciona que se asuste algun burocrata con menos de 10 años de exp"{	
 		castillo2.contratarGuardias(350)
 		castillo1.contratarGuardias(20)
@@ -124,10 +130,7 @@ describe "Condiciones Iniciales" {
 		
 		// console.println('energia antes: ' + energiaAntesFiesta)
 		// console.println('energia despues: '+ energiaDespuesFiesta)
-		
-		console.println(energiaAntesFiesta)
-		console.println(energiaDespuesFiesta)
-		
+				
 		assert.that(energiaDespuesFiesta > energiaAntesFiesta)
 		
 	}

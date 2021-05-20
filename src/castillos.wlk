@@ -42,10 +42,26 @@ class Castillo {
 	method lider()       = lider
 	method estabilidad(_estabilidad) { estabilidad = _estabilidad }
 	method resistencia(_resistencia) { resistencia = _resistencia }
+	
+	method construirHabitaciones(cant) {
+		cant.times({ i => ambientes.add(new Habitacion()) })
+	}
 		
 	method resistencia() {
-		return resistencia + muralla * 20 + burocratas.filter({ burocrata => burocrata.puedePlanificar() })
-															.sum({ burocrata => burocrata.aniosExperiencia() * 5})
+		return resistencia + muralla * 20 + self.efectoBurocratas() + self.efectoGuardias() + self.efectoAmbientes()
+	}
+	
+	method efectoAmbientes() {
+		return ambientes.size() * 15
+	}
+	
+	method efectoGuardias() {
+		return self.guardias().sum({ g => g.capacidad() }) / 10
+	}
+	
+	method efectoBurocratas() {
+		return burocratas.filter({ burocrata => burocrata.puedePlanificar() })
+					.sum({ burocrata => burocrata.aniosExperiencia() * 5})
 	}
 
 	method cambiarAReina() {
@@ -151,6 +167,10 @@ class Castillo {
 	method diferenciaEjercitos(atacante) {
 		return atacante.guardias().size() - self.guardias().size()
 	}
+}
+
+class Habitacion {
+	
 }
 
 class Patio {
