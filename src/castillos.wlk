@@ -33,7 +33,6 @@ class Castillo {
 	}
 	
 	method estabilidad() = estabilidad
-	method resistencia() = resistencia
 	method cocina()		 = cocina
 	method patio() 		 = patio
 	method guardias()    = guardias
@@ -46,11 +45,15 @@ class Castillo {
 	
 	method prepararDefensas() {
 		guardias.forEach({ guardia => estabilidad += guardia.capacidad() * 0.1 })
-		burocratas.filter({ burocrata => burocrata.puedePlanificar() })
-					.forEach({ burocrata => resistencia += burocrata.aniosExperiencia() * 10})
+
 		resistencia += muralla * 20
 	}
 	
+	method resistencia() {
+		return resistencia + muralla * 20 + burocratas.filter({ burocrata => burocrata.puedePlanificar() })
+															.sum({ burocrata => burocrata.aniosExperiencia() * 5})
+	}
+
 	method cambiarAReina() {
 		lider = new Reina(castillo = self)
 	}
@@ -103,7 +106,7 @@ class Castillo {
 	
 	method atacar(objetivo) {
 		if (!self.derrotado()){
-			objetivo.prepararDefensas()
+			// objetivo.prepararDefensas()
 			objetivo.defender(self)
 			// segun las caracteristicas del objetivo, sufrimos daño.
 			// los guardias se agotan mas que los del objetivo porque el enemigo esta fortificado.
@@ -126,8 +129,8 @@ class Castillo {
 			// Lo valancee un poco, funciona pero los valores que pierde
 			// de estabilidad y resistencia varian debido al metodo prepararDefensas.
 			// Hay veces que terminas con mas estabilidad y defensa despues del ataque.
-			estabilidad = estabilidad - (self.diferenciaEjercitos(atacante) * 1500 / resistencia)
-			resistencia = resistencia - (self.diferenciaEjercitos(atacante) * 5)
+			estabilidad = estabilidad - (self.diferenciaEjercitos(atacante) * 1500 / self.resistencia())
+			// resistencia = resistencia - (self.diferenciaEjercitos(atacante) * 5)
 		}
 		
 		guardias.forEach({ guardia => guardia.defenderCastillo() })
