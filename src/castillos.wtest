@@ -1,6 +1,216 @@
+import castillos.*
 
-describe "castillos en guerra" {
-	test "2 + 2 = 4" {
-		assert.equals(4, 2 + 2)
-	}
+test "Funciona contratación de guardias" {
+	const castillo1 = new Castillo()
+	const castillo2 = new Castillo()
+	const castillo3 = new Castillo()	
+	
+	castillo1.contratarGuardias(13)
+	assert.equals(13, castillo1.guardias().size())
+	
+	castillo2.contratarGuardias(20)
+	assert.equals(20, castillo2.guardias().size())
+	
+	castillo3.contratarGuardias(25)
+	assert.equals(25, castillo3.guardias().size())
+}
+
+test "Funciona contratacion de burocratas" {
+	const castillo1 = new Castillo()
+	
+	// creo dos burocratas.
+	var pedro = new Burocrata(nombre = 'Pedro', fechaDeNacimiento = '15/02/1448', aniosExperiencia = 20)
+	var pablo = new Burocrata(nombre = 'Pablo', fechaDeNacimiento = '10/08/1437', aniosExperiencia = 35)
+	
+	// los contrato al castillo1
+	castillo1.contratarBurocrata(pedro)
+	castillo1.contratarBurocrata(pablo)
+	
+	// verifico que se los contrato
+	assert.equals(['Pedro', 'Pablo'], castillo1.burocratas().map({i=>i.nombre()}))
+}
+
+test "Funciona identificar objetivo de ataque" {
+	// tengo tres castillos.
+	const castillo1 = new Castillo()
+	const castillo2 = new Castillo()
+	const castillo3 = new Castillo()
+	
+	// le bajo la resistencia al castillo2 y le subo a castillo3 con un metodo para probar.
+	castillo2.resistencia(400)
+	castillo3.resistencia(650)
+	
+	// el castillo1 tiene 20 guardias,
+	castillo1.contratarGuardias(20)
+	// el castillo3 tiene 25 guardias,
+	castillo1.contratarGuardias(20)
+	// y el castillo2 tiene 40
+	castillo2.contratarGuardias(40)
+	
+	// veo que cuando castillo2 busque objetivo, no se reciba a si mismo, 
+	// sino el menor distinto de el, osea castillo1 en este caso.
+	assert.equals(castillo1, castillo2.lider().buscarObjetivo())
+}
+
+test "Funciona preparacion de defensas" {
+	// nos fijamos que aumente de los valores iniciales la estabilidad y la resistencia
+	var castillo1 = new Castillo()
+	castillo1.contratarGuardias(20)
+	var b1 = new Burocrata(nombre = 'Juan', fechaDeNacimiento = '15/04/1467', aniosExperiencia = 1)
+	var b2 = new Burocrata(nombre = 'Pedro', fechaDeNacimiento = '16/03/1445', aniosExperiencia = 10)
+		
+	castillo1.contratarBurocrata(b1)
+	castillo1.contratarBurocrata(b2)
+	
+	var estabilidadInicial = castillo1.estabilidad()
+	var resistenciaInicial = castillo1.resistencia()
+	
+	castillo1.prepararDefensas()
+	
+	var estabilidadFinal   = castillo1.estabilidad()
+	var resistenciaFinal   = castillo1.resistencia()
+	
+	assert.that(estabilidadFinal > estabilidadInicial and resistenciaFinal > resistenciaInicial)
+	
+}
+
+test "Funciona que se asuste algun burocrata con menos de 10 años de exp"{
+	var castillo1 = new Castillo()
+	var castillo2 = new Castillo()
+	
+	castillo2.contratarGuardias(350)
+	castillo1.contratarGuardias(20)
+	
+	// cada uno contrata a dos burocratas.
+	// solo se podria asustar b1.
+	var b1 = new Burocrata(nombre = 'Juan', fechaDeNacimiento = '15/04/1467', aniosExperiencia = 1)
+	var b2 = new Burocrata(nombre = 'Pedro', fechaDeNacimiento = '16/03/1445', aniosExperiencia = 10)
+	var b3 = new Burocrata(nombre = 'Thomas', fechaDeNacimiento = '16/05/1434', aniosExperiencia = 15)
+	var b4 = new Burocrata(nombre = 'Jorge', fechaDeNacimiento = '17/02/1476', aniosExperiencia = 3)
+
+	castillo1.contratarBurocrata(b1)
+	castillo1.contratarBurocrata(b2)
+	castillo1.contratarBurocrata(b3)
+	castillo2.contratarBurocrata(b4)
+	
+	// castillo 2 ataca a castillo1
+	castillo2.atacar(castillo2.lider().buscarObjetivo())
+	// console.println(castillo1.burocratas().filter({b => b.asustado()}))
+	assert.that(castillo1.burocratas().any({b => b.asustado()}))
+}
+
+test "Funcionan las fiestas: se calman los bur. y recuperan los guardias" {
+	var castillo1 = new Castillo()
+	var castillo2 = new Castillo()
+	
+	castillo2.contratarGuardias(50)
+	castillo1.contratarGuardias(20)
+	
+	// cada uno contrata a dos burocratas.
+	// solo se podria asustar b1.
+	var b1 = new Burocrata(nombre = 'Juan', fechaDeNacimiento = '15/04/1467', aniosExperiencia = 1)
+	var b2 = new Burocrata(nombre = 'Pedro', fechaDeNacimiento = '16/03/1445', aniosExperiencia = 10)
+	var b3 = new Burocrata(nombre = 'Thomas', fechaDeNacimiento = '16/05/1434', aniosExperiencia = 15)
+	var b4 = new Burocrata(nombre = 'Jorge', fechaDeNacimiento = '17/02/1476', aniosExperiencia = 3)
+
+	castillo1.contratarBurocrata(b1)
+	castillo1.contratarBurocrata(b2)
+	castillo1.contratarBurocrata(b3)
+	castillo2.contratarBurocrata(b4)
+	
+	
+	// castillo 2 ataca a castillo1
+	castillo2.atacar(castillo2.lider().buscarObjetivo())
+	
+	var energiaAntesFiesta = castillo1.guardias().sum({ g => g.energia() })
+	
+	/* PRINTS DEBUGGING */
+	// console.println(castillo1.burocratas().filter({b => b.asustado()}))
+	// console.println(castillo1.resistencia())
+	// console.println(castillo1.burocratas().any({b => b.asustado()}))
+	// console.println(castillo1.burocratas().map({b => b.asustado()}))
+	// console.println('Es posible fiesta ' + castillo1.esPosibleFiesta())
+	castillo1.lider().ordenarFiesta()
+	
+	var energiaDespuesFiesta = castillo1.guardias().sum({ g => g.energia() })
+	
+	//console.println(castillo1.burocratas().map({b => b.asustado()}))
+	// VERIFICO QUE NO HAYA NINGUN BUR. ASUSTADO
+	assert.that(not castillo1.burocratas().any({b => b.asustado()}))
+	
+	// PARA VERIFICAR QUE DESCANSARON GUARDIAS
+	// ME FIJO LA SUMA DE energia ANTES Y DESP. DE FEST.
+	assert.that(not castillo1.burocratas().any({b => b.asustado()}))
+	
+	// console.println('energia antes: ' + energiaAntesFiesta)
+	// console.println('energia despues: '+ energiaDespuesFiesta)
+	
+	console.println(energiaAntesFiesta)
+	console.println(energiaDespuesFiesta)
+	
+	assert.that(energiaDespuesFiesta > energiaAntesFiesta)
+	
+}
+
+test "Funciona ataque de un castillo a otro y que este sea derrotado" {	
+	var castillo1 = new Castillo()
+	var castillo2 = new Castillo()
+	
+	castillo2.contratarGuardias(350)
+	castillo1.contratarGuardias(20)
+	
+	// cada uno contrata a dos burocratas.
+	var b1 = new Burocrata(nombre = 'Juan', fechaDeNacimiento = '15/04/1467', aniosExperiencia = 1)
+	var b2 = new Burocrata(nombre = 'Pedro', fechaDeNacimiento = '16/03/1445', aniosExperiencia = 3)
+	var b3 = new Burocrata(nombre = 'Jorge', fechaDeNacimiento = '17/02/1476', aniosExperiencia = 3)
+	var b4 = new Burocrata(nombre = 'Tomas', fechaDeNacimiento = '18/01/1462', aniosExperiencia = 5)
+	castillo1.contratarBurocrata(b1)
+	castillo1.contratarBurocrata(b2)
+	castillo2.contratarBurocrata(b3)
+	castillo2.contratarBurocrata(b4)
+	
+	// castillo 2 ataca a castillo1
+	castillo2.atacar(castillo2.lider().buscarObjetivo())
+	assert.that(castillo1.derrotado())
+}
+
+test "Funciona cocina?" {
+	var castillo1 = new Castillo()
+	castillo1.contratarGuardias(30)
+	castillo1.contratarCocineros(2)
+	
+	// cada cocinero aumenta el energia del guardia mas canzado en 20.
+	// esto lo hace 10 veces. Al final de alimentar a todos. Tendria una energia total
+	// del 3400
+	
+	castillo1.alimentarGuardias()
+	
+	assert.equals(3400, castillo1.guardias().sum({ g => g.energia() }))
+}
+
+test "Funciona patio?" {
+	var castillo1 = new Castillo()
+	castillo1.contratarGuardias(20)
+	castillo1.contratarEntrenadores(2)
+	
+	// Cada entrenador aumenta la capacidad del guardia con menos capacidad en 5.
+	// Esto lo hace 5 veces. Al final de alimentar a todos. Tendria una capacidad total
+	// del 3050
+	
+	castillo1.entrenarGuardias()
+	
+	assert.equals(10*10+5*10, castillo1.guardias().sum({ g => g.capacidad() }))
+}
+
+test "Funciona Reina?" {
+	var castillo1 = new Castillo()
+	castillo1.contratarGuardias(30)
+	
+	// La reina aumenta la energia de todos los guardias por 50
+	// Por lo que la suma final de energia de todos los guardias deberia se 4500
+	
+	castillo1.cambiarAReina()
+	castillo1.lider().inspirarGuardias()
+	
+	assert.equals(4500, castillo1.guardias().sum({ g => g.energia() }))
 }
