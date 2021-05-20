@@ -42,13 +42,7 @@ class Castillo {
 	method lider()       = lider
 	method estabilidad(_estabilidad) { estabilidad = _estabilidad }
 	method resistencia(_resistencia) { resistencia = _resistencia }
-	
-	method prepararDefensas() {
-		guardias.forEach({ guardia => estabilidad += guardia.capacidad() * 0.1 })
-
-		resistencia += muralla * 20
-	}
-	
+		
 	method resistencia() {
 		return resistencia + muralla * 20 + burocratas.filter({ burocrata => burocrata.puedePlanificar() })
 															.sum({ burocrata => burocrata.aniosExperiencia() * 5})

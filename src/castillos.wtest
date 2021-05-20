@@ -51,28 +51,7 @@ describe "Condiciones Iniciales" {
 		// sino el menor distinto de el, osea castillo1 en este caso.
 		assert.equals(castillo1, castillo2.lider().buscarObjetivo())
 	}
-	
-	test "Funciona preparacion de defensas" {
-		// nos fijamos que aumente de los valores iniciales la estabilidad y la resistencia
-		castillo1.contratarGuardias(20)
-		var b1 = new Burocrata(nombre = 'Juan', fechaDeNacimiento = '15/04/1467', aniosExperiencia = 1)
-		var b2 = new Burocrata(nombre = 'Pedro', fechaDeNacimiento = '16/03/1445', aniosExperiencia = 10)
-			
-		castillo1.contratarBurocrata(b1)
-		castillo1.contratarBurocrata(b2)
 		
-		var estabilidadInicial = castillo1.estabilidad()
-		var resistenciaInicial = castillo1.resistencia()
-		
-		castillo1.prepararDefensas()
-		
-		var estabilidadFinal   = castillo1.estabilidad()
-		var resistenciaFinal   = castillo1.resistencia()
-		
-		assert.that(estabilidadFinal > estabilidadInicial and resistenciaFinal > resistenciaInicial)
-		
-	}
-	
 	test "Funciona agrandarMuralla" {
 		castillo1.agrandarMuralla(2)
 		assert.that(castillo1.muralla() == 5)
